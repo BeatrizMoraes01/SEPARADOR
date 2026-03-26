@@ -1,0 +1,38 @@
+let
+    Fonte = Table.Combine({TRIMESTRE, FATURADO}),
+
+        // Lista de colunas que quer tratar
+    Colunas = {
+        "COORDENADOR VENDAS",
+        "SUPERVISOR VENDAS",
+	    "CLASSECLIENTE",
+        "VENDEDOR",
+        "FORNECEDOR",
+        "ESTADO",
+        "CIDADE CLIENTE",
+        "CLIENTE",
+        "CATEGORIA",
+        "MARCA",
+        "RAMOATIVIDADE",
+        "PRODUTO"
+    },
+
+    TransformarColuna = (Tabela as table, NomeColuna as text) =>
+        let
+            CriarID = Table.AddColumn(
+                Tabela,
+                "ID_" & NomeColuna,
+                each Text.BeforeDelimiter(Record.Field(_, NomeColuna), " - "),
+                type text
+            )
+        in
+            CriarID,
+
+    Resultado = List.Accumulate(
+        Colunas,
+        Fonte,
+        (estado, colunaAtual) => TransformarColuna(estado, colunaAtual)
+    ),
+    #"Colunas Reordenadas" = Table.ReorderColumns(Resultado,{"ID_COORDENADOR VENDAS", "COORDENADOR VENDAS", "ID_SUPERVISOR VENDAS", "SUPERVISOR VENDAS", "ID_CLASSECLIENTE", "CLASSECLIENTE", "ID_VENDEDOR", "VENDEDOR", "ID_FORNECEDOR", "FORNECEDOR", "ID_ESTADO", "ESTADO", "ID_CIDADE CLIENTE", "CIDADE CLIENTE", "ID_CLIENTE", "CLIENTE", "ID_CATEGORIA", "CATEGORIA", "ID_MARCA", "MARCA", "ID_RAMOATIVIDADE", "RAMOATIVIDADE", "ANO", "MÊS", "DATA", "ID_PRODUTO", "PRODUTO", "QUANTIDADE", "VENDA", "DEVOLUCAO", "FATURADO", "HIST-ATUAL"})
+in
+    #"Colunas Reordenadas"
